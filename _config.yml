@@ -5,23 +5,23 @@ paginate: 5
 language: 'en-uk'
 
 # Website info
-name: 'Finding The Way Home'
-description: "A beautiful narrative written with the world's most elegant publishing platform. The story begins here."
+name: 'Stray thoughts & keystrokes'
+description: "Web log of various coding experiments and attempts"
 
 # Author's info
-author: 'Casper McFadden'
+author: 'Madhu kiran'
 # edit 'categories' in the front matter of every post to match this username
-nickname: casper
-bio: 'A paranormal expert and his daughter bunk in an abandoned house populated by 3 mischievous ghosts and one friendly one.'
-location: 'Maine, USA'
-url: 'http://biomadeira.github.io/jasper/'
-image: 'assets/images/casper.png'
+nickname: madki
+bio: 'Believes coding is a form of creative expression.'
+location: 'Some City, India'
+url: 'http://madki.xyz'
+image: 'assets/images/madhukiran.jpg'
 
-short_url: 'biomadeira.github.io/jasper/'
-google_analytics: UA-69281367-1
-disqus: username
+short_url: 'madki.xyz'
+google_analytics: UA-73781008-1
+disqus: madki
 # edit baseurl to simply '/' if using as your personal page (instead of a project page)
-baseurl: /jasper/
+baseurl: /blog/
 
 # Permalinks
 permalink: /:title
@@ -54,13 +54,13 @@ exclude: [vendor]
 # or "master" otherwise
 safe: false
 lsi: false
-username: biomadeira
-repo: jasper
+username: madki
+repo: blog
 branch: master
-relative_source: ../jasper/
-destination: ../jasper-pages/
-production_url:  https://biomadeira.github.io/jasper/
-source_url:      https://github.com/biomadeira/jasper/
+relative_source: ../blog/
+destination: ../blog-pages/
+production_url:  https://madki.github.io/blog/
+source_url:      https://github.com/madki/blog/
 
 exclude:
   - README.md
