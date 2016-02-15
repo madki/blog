@@ -1,0 +1,20 @@
+---
+layout: post
+title: Serializer methods instead of objects
+cover: false
+date:   2016-02-05 10:18:00
+tags: bundler
+subclass: 'post tag-bundler'
+categories: 'madki'
+navigation: True
+logo: 'assets/images/ghost.png'
+---
+
+The current implementation of `Seralizer` in `Bundler` was simply a copy of the implementation of `ArgsBundler` in `FragmentArgs` library. 
+
+```java
+public interface Serializer<T> {
+	void put(Bundle bundle, String key, T value);
+	T get(Bundle bundle, String key);
+}
+```
