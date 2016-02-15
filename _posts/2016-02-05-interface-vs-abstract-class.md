@@ -8,6 +8,7 @@ subclass: 'post tag-bundler'
 categories: 'madki'
 navigation: True
 logo: 'assets/images/ghost.png'
+disqus: 'xyz.madki.interface-vs-abstract-class'
 ---
 
 Having decided defining the `@Arg`s are better off by not being fields. Having an inner `class/interface` for them seems like a good idea. For a DemoActivity with two fields `int id` and `String name` the `class` and `interface` will look as follows:

@@ -8,6 +8,7 @@ subclass: 'post tag-bundler'
 categories: 'madki'
 navigation: True
 logo: 'assets/images/ghost.png'
+disqus: 'xyz.madki.defaults-in-bundler-2'
 ---
 
 The previous version of `Bundler` used fields, so they could be initialized to some value, if the intent/bundle recieved didn't contain the key corresponding to the field it was left as is. So in a way it provided some defaults. For example:

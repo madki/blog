@@ -8,6 +8,7 @@ subclass: 'post tag-bundler'
 categories: 'madki'
 navigation: True
 logo: 'assets/images/ghost.png'
+disqus: 'xyz.madki.auto-intent'
 ---
 
 ## The problem 
