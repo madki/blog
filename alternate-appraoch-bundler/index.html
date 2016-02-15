@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- [[! Page Meta ]] -->
-    <title>The Businessman & the fisherman</title>
+    <title>Alternate approach for Bundler</title>
     <meta name="description" content="Stray thoughts & keystrokes - Web log of various coding experiments and attempts" />
 
     <meta name="HandheldFriendly" content="True" />
@@ -84,8 +84,8 @@
 <!-- Everything inside the #post tags pulls data from the post -->
 <!-- #post -->
 
-<header class="main-header post-head " style="background-image: url(/blog/assets/images/cover7.jpg) ">
-    <nav class="main-nav  overlay  clearfix">
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
         <a class="blog-logo" href="/blog/"><img src="/blog/assets/images/ghost.png" alt="Blog Logo" /></a>
         
             <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
@@ -95,23 +95,19 @@
 
 <main class="content" role="main">
 
-    <article class="post tag-test tag-content">
+    <article class="post tag-bundler">
 
         <header class="post-header">
-            <h1 class="post-title">The Businessman & the fisherman</h1>
+            <h1 class="post-title">Alternate approach for Bundler</h1>
             <section class="post-meta">
             <!-- <a href='/blog/'>Madhu kiran</a> -->
-            <time class="post-date" datetime="2014-08-12">12 Aug 2014</time>
+            <time class="post-date" datetime="2016-02-04">04 Feb 2016</time>
                 <!-- [[tags prefix=" on "]] -->
                  
                 on 
                 
                     
-                       <a href='/blog/tag/fables'>Fables</a>,
-                       
-                
-                    
-                       <a href='/blog/tag/fiction'>Fiction</a>
+                       <a href='/blog/tag/bundler'>Bundler</a>
                        
                 
                 
@@ -120,35 +116,58 @@
 
         <section class="post-content">
             
-            <p>An American businessman took a vacation to a small coastal Mexican village on doctor’s orders. Unable to sleep after an urgent phone call from the office the first morning, he walked out to the pier to clear his head. A small boat with just one fisherman had docked, and inside the boat were several large yellowfin tuna. The American complimented the Mexican on the quality of his fish.</p>
+            <h2>Problems with Bundler</h2>
 
-<p>“How long did it take you to catch them?” the American asked.</p>
+<ul>
+<li>global fields with package level visibility</li>
+<li>use of generated classes all over the place</li>
+<li>may be generates too much code and should make users write more (?)</li>
+<li><code>@State</code> is an entirely different problem that <code>Bundler</code> need not address</li>
+<li>An activity using <code>Bundler</code> to get type-safety is not an implementation detail and ideally it should be.</li>
+<li>Field defaults and resetting (what should be default value, should the field value be reset when a second value is injected)</li>
+</ul>
 
-<p>“Only a little while,” the Mexican replied in surprisingly good English.</p>
+<p>Right now calling classes make use of the generated <code>Bundler</code> class for starting activities. But ideally Bundler should be an implementation detail for the calling classes. A better approach would be to not generate the <code>bundlerActivity()</code> methods in <code>Bundler</code>.</p>
 
-<p>“Why don’t you stay out longer and catch more fish?” the American then asked.</p>
+<p>So a better version of <code>Bundler</code> though requiring more code would have the following features:</p>
 
-<p>“I have enough to support my family and give a few to friends,” the Mexican said as he unloaded them into a basket.</p>
+<ul>
+<li>No global fields</li>
+<li>calling classes shouldn&#39;t need to know the existence of <code>Bundler</code></li>
+<li>minimize the use of generated classes</li>
+</ul>
 
-<p>“But… What do you do with the rest of your time?”</p>
+<p>An approach similar to the super-awesome <code>AutoValue</code> library can be taken. Instead of getting the intent extras from fields they can be defined in an interface (or an abstract class ?)</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DemoActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
 
-<p>The Mexican looked up and smiled. “I sleep late, fish a little, play with my children, take a siesta with my wife, Julia, and stroll into the village each evening, where I sip wine and play guitar with my amigos. I have a full and busy life, señor.”</p>
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Extras</span> <span class="n">extras</span> <span class="o">=</span> <span class="n">DemoActivityExtras</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+        <span class="c1">// use id(-1) and name() methods of Extras</span>
+    <span class="o">}</span>
 
-<p>The American laughed and stood tall. “Sir, I’m a Harvard M.B.A. and can help you. You should spend more time fishing, and with the proceeds, buy a bigger boat. In no time, you could buy several boats with the increased haul. Eventually, you would have a fleet of fishing boats.”</p>
+    <span class="nd">@Args</span>
+    <span class="kd">interface</span> <span class="nc">Extras</span> <span class="o">{</span>
+        <span class="nd">@Key</span><span class="o">(</span><span class="s">&quot;some_key&quot;</span><span class="o">)</span>
+        <span class="kt">int</span> <span class="nf">id</span><span class="o">(</span><span class="kt">int</span> <span class="n">defaultVal</span><span class="o">);</span>
+        <span class="nd">@Required</span><span class="o">(</span><span class="kc">false</span><span class="o">)</span> <span class="nd">@Nullable</span>
+        <span class="n">String</span> <span class="nf">name</span><span class="o">();</span>
 
-<p>He continued, “Instead of selling your catch to a middleman, you would sell directly to the consumers, eventually opening your own cannery. You would control the product, processing, and distribution. You would need to leave this small coastal fishing village, of course, and move to Mexico City, then to Los Angeles, and eventually to New York City, where you could run your expanded enterprise with proper management.</p>
+        <span class="c1">// extra helper methods can be added to know if a key was sent or not</span>
+        <span class="nd">@Helper</span>
+        <span class="kt">boolean</span> <span class="nf">hasName</span><span class="o">();</span>
+    <span class="o">}</span>
 
-<p>The Mexican fisherman asked, “But, señor, how long will all this take?”</p>
-
-<p>To which the American replied, “15-20 years, 25 tops.”</p>
-
-<p>“But what then, señor?”</p>
-
-<p>The American laughed and said, “That’s the best part. When the time is right, you would announce an IPO and sell your company stock to the public and become very rich. You would make millions.”</p>
-
-<p>“Millions señor? Then what?&quot;</p>
-
-<p>“Then you would retire and move to a small coastal fishing village, where you would sleep late, fish a little, play with your kids, take a siesta with your wife, and stroll in to the village in the evenings where you could sip wine and play your guitar with your amigos.”</p>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">DemoActivityExtras</span><span class="o">.</span><span class="na">Builder</span> <span class="nf">withId</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">DemoActivityExtras</span><span class="o">.</span><span class="na">build</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>A calling class (say <code>AnotherActivty</code>) can start the above <code>DemoActivity</code> as:</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// code in AnotherActivity.class</span>
+    <span class="n">DemoActivity</span><span class="o">.</span><span class="na">withId</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">name</span><span class="o">(</span><span class="s">&quot;xyz&quot;</span><span class="o">).</span><span class="na">start</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+</code></pre></div>
+<p>The only problem with this is <code>DemoActivityExtras.Builder</code> which is a generated class is being exposed. Ideal case would be to go the full <code>AutoValue</code> way and require a Builder interface inside Extras. But how much code is too much and where lies the line. This version of <code>Bundler</code> is more sound that the current one but it definitely increased the code, and a little more code <code>Bundler</code> would become an implementation detail completely.</p>
 
 
         </section>
@@ -180,15 +199,15 @@
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="http://twitter.com/share?text=The Businessman & the fisherman&amp;url=http://madki.xyzthe-businessman-and-fisherman"
+                <a class="icon-twitter" href="http://twitter.com/share?text=Alternate approach for Bundler&amp;url=http://madki.xyzalternate-appraoch-bundler"
                     onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://madki.xyzthe-businessman-and-fisherman"
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://madki.xyzalternate-appraoch-bundler"
                     onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=http://madki.xyzthe-businessman-and-fisherman"
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=http://madki.xyzalternate-appraoch-bundler"
                    onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
@@ -207,20 +226,20 @@
 
     <!-- [[! next_post ]] -->
     
-        <a class="read-next-story " style="background-image: url(/blog/assets/images/cover3.jpg)" href="/blog/a-full-and-comprehensive-style-test">
+        <a class="read-next-story no-cover" href="/blog/defaults-in-bundler-2">
             <section class="post">
-                <h2>A Full and Comprehensive Style Test</h2>
-                <p>This is just an ipsis verbis copy of the first example running on the Ghost...</p>
+                <h2>Defaults in Bundler 2.0</h2>
+                <p>The previous version of `Bundler` used fields, so they could be initialized to some value,...</p>
             </section>
         </a>
     
     <!-- [[! /next_post ]] -->
     <!-- [[! prev_post ]] -->
     
-        <a class="read-next-story prev " style="background-image: url(/blog/assets/images/cover4.jpg)" href="/blog/i-have-a-dream">
+        <a class="read-next-story prev no-cover" href="/blog/bundler-intro">
             <section class="post">
-                <h2>I Have a Dream</h2>
-                <p>I am happy to join with you today in what will go down in history...</p>
+                <h2>Bundler</h2>
+                <p>The problem Bundles and intents in android are used every where. They&#39;re android&#39;s way of...</p>
             </section>
         </a>
     

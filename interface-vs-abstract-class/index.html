@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- [[! Page Meta ]] -->
-    <title>Gettysburg Address</title>
+    <title>Interface vs abstract class for `@Args`</title>
     <meta name="description" content="Stray thoughts & keystrokes - Web log of various coding experiments and attempts" />
 
     <meta name="HandheldFriendly" content="True" />
@@ -86,26 +86,28 @@
 
 <header class="main-header post-head no-cover">
     <nav class="main-nav  clearfix">
+        <a class="blog-logo" href="/blog/"><img src="/blog/assets/images/ghost.png" alt="Blog Logo" /></a>
         
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
         
     </nav>
 </header>
 
 <main class="content" role="main">
 
-    <article class="post tag-fiction">
+    <article class="post tag-bundler">
 
         <header class="post-header">
-            <h1 class="post-title">Gettysburg Address</h1>
+            <h1 class="post-title">Interface vs abstract class for `@Args`</h1>
             <section class="post-meta">
             <!-- <a href='/blog/'>Madhu kiran</a> -->
-            <time class="post-date" datetime="1863-11-19">19 Nov 1863</time>
+            <time class="post-date" datetime="2016-02-05">05 Feb 2016</time>
                 <!-- [[tags prefix=" on "]] -->
                  
                 on 
                 
                     
-                       <a href='/blog/tag/fiction'>Fiction</a>
+                       <a href='/blog/tag/bundler'>Bundler</a>
                        
                 
                 
@@ -114,15 +116,34 @@
 
         <section class="post-content">
             
-            <p>Fourscore and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.</p>
+            <p>Having decided defining the <code>@Arg</code>s are better off by not being fields. Having an inner <code>class/interface</code> for them seems like a good idea. For a DemoActivity with two fields <code>int id</code> and <code>String name</code> the <code>class</code> and <code>interface</code> will look as follows:</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// inner class of DemoActivity</span>
+    <span class="nd">@Args</span>
+    <span class="kd">interface</span> <span class="nc">Extras</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="nf">id</span><span class="o">();</span>
+        <span class="n">String</span> <span class="nf">name</span><span class="o">();</span>
+    <span class="o">}</span>
+</code></pre></div><div class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// inner class of DemoActivity</span>
+    <span class="nd">@Args</span>
+    <span class="kd">static</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Extras</span> <span class="o">{</span>
+        <span class="kd">protected</span> <span class="kd">abstract</span> <span class="kt">int</span> <span class="nf">id</span><span class="o">();</span>
+        <span class="kd">protected</span> <span class="kd">abstract</span> <span class="n">String</span> <span class="nf">name</span><span class="o">();</span>
+    <span class="o">}</span> 
+</code></pre></div>
+<p>Point weighing in the direction of <code>interface</code> is the marginally lesser amount of code. But the advantages with using a <code>class</code> for this job are evident the <code>class</code> does not need to have <code>public</code> visibility, it could be package-default and the methods inside can be <code>protected</code> as only the surrounding class <code>DemoActivity</code> will be accessing it. The fields cannot be <code>private</code> because then the generated class won&#39;t be able to extend it. And additionally methods can be added to a class that act as derived fields for example:</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// inner class of DemoActivity</span>
+    <span class="nd">@Args</span>
+    <span class="kd">static</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Extras</span> <span class="o">{</span>
+        <span class="kd">protected</span> <span class="kd">abstract</span> <span class="n">String</span> <span class="nf">firstName</span><span class="o">();</span>
+        <span class="kd">protected</span> <span class="kd">abstract</span> <span class="n">String</span> <span class="nf">lastName</span><span class="o">();</span>
 
-<p>Now we are engaged in a great civil war, testing whether that nation, or any nation so conceived and so dedicated, can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live. It is altogether fitting and proper that we should do this.</p>
-
-<p>But, in a larger sense, we can not dedicate-we can not consecrate-we can not hallow-this ground. The brave men, living and dead, who struggled here, have consecrated it, far above our poor power to add or detract. The world will little note, nor long remember what we say here, but it can never forget what they did here. It is for us the living, rather, to be dedicated here to the unfinished work which they who fought here have thus far so nobly advanced. It is rather for us to be here dedicated to the great task remaining before us-that from these honored dead we take increased devotion to that cause for which they gave the last full measure of devotion-that we here highly resolve that these dead shall not have died in vain-that this nation, under God, shall have a new birth of freedom-and that government of the people, by the people, for the people shall not perish from the earth.</p>
-
-<p>By <strong>Abraham Lincoln</strong></p>
-
-<p>The 16th president of the USA until he was assassinated in April of 1963. He led the US through its Civil War - its bloodiest and greatest moral, constitutional and political crisis.</p>
+        <span class="c1">// not an Intent Extra</span>
+        <span class="kd">protected</span> <span class="n">String</span> <span class="nf">fullName</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nf">firstName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="n">lastName</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span> 
+</code></pre></div>
+<p><code>extras.fullName()</code> can now be accessed although it&#39;s not data sent in intent. Any data modifications can be done in such a manner. Although I&#39;m not sure how useful this is going to be.</p>
 
 
         </section>
@@ -154,15 +175,15 @@
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="http://twitter.com/share?text=Gettysburg Address&amp;url=http://madki.xyzgettysburg-address"
+                <a class="icon-twitter" href="http://twitter.com/share?text=Interface vs abstract class for `@Args`&amp;url=http://madki.xyzinterface-vs-abstract-class"
                     onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://madki.xyzgettysburg-address"
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://madki.xyzinterface-vs-abstract-class"
                     onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=http://madki.xyzgettysburg-address"
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=http://madki.xyzinterface-vs-abstract-class"
                    onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
@@ -181,15 +202,22 @@
 
     <!-- [[! next_post ]] -->
     
-        <a class="read-next-story " style="background-image: url(/blog/assets/images/cover1.jpg)" href="/blog/down-the-rabbit-hole">
+        <a class="read-next-story no-cover" href="/blog/auto-intent">
             <section class="post">
-                <h2>Down The Rabbit Hole</h2>
-                <p>Alice was beginning to get very tired of sitting by her sister on the bank,...</p>
+                <h2>AutoIntent</h2>
+                <p>## The problem Data transfer in android happens a lot via intents. Even in case...</p>
             </section>
         </a>
     
     <!-- [[! /next_post ]] -->
     <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev no-cover" href="/blog/defaults-in-bundler-2">
+            <section class="post">
+                <h2>Defaults in Bundler 2.0</h2>
+                <p>The previous version of Bundler used fields, so they could be initialized to some value,...</p>
+            </section>
+        </a>
     
     <!-- [[! /prev_post ]] -->
 </aside>

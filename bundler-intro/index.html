@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Bundler</title>
+    <meta name="description" content="Stray thoughts & keystrokes - Web log of various coding experiments and attempts" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/blog/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/blog/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/blog/assets/css/syntax.css" />
+    
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/blog/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/blog/page2/" />
+
+    <meta property="og:site_name" content="Stray thoughts & keystrokes" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Stray thoughts & keystrokes" />
+    <meta property="og:description" content="Web log of various coding experiments and attempts" />
+    <meta property="og:url" content="/blog/" />
+    <meta property="og:image" content="/blog/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Stray thoughts & keystrokes" />
+    <meta name="twitter:description" content="Web log of various coding experiments and attempts" />
+    <meta name="twitter:url" content="/blog/" />
+    <meta name="twitter:image:src" content="/blog/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Finding The Way Home",
+    "url": "/blog/",
+    "image": "/blog/assets/images/cover1.jpg",
+    "description": "Web log of various coding experiments and attempts"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Stray thoughts & keystrokes" href="/blog/rss.xml" />
+
+</head>
+<body class="post-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation"><a href="/blog/">Home</a></li>
+        <li class="nav-about " role="presentation"><a href="/blog/about">About</a></li>
+        <li class="nav-fables " role="presentation"><a href="/blog/tag/fables">Fables</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/blog/tag/speeches">Speeches</a></li>
+        <li class="nav-fiction " role="presentation"><a href="/blog/tag/fiction">Fiction</a></li>
+        <li class="nav-author " role="presentation"><a href="/blog/author/madki">Author</a></li>
+        <li class="nav-author " role="presentation"><a href="http://madki.xyz/portfolio">Portfolio</a></li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/blog/rss.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        <a class="blog-logo" href="/blog/"><img src="/blog/assets/images/ghost.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-bundler">
+
+        <header class="post-header">
+            <h1 class="post-title">Bundler</h1>
+            <section class="post-meta">
+            <!-- <a href='/blog/'>Madhu kiran</a> -->
+            <time class="post-date" datetime="2016-01-15">15 Jan 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/blog/tag/bundler'>Bundler</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <h3>The problem</h3>
+
+<p>Bundles and intents in android are used every where. They&#39;re android&#39;s way of serializing data,
+persisting state and decoupling elements completely so that one component (activity/service/..)
+does not need to depend on an interface or a method from another component to start it. The problem
+with intents and bundles is two-fold.
+1. There is too much broiler plate
+2. Type safety is lost in the process of serialization</p>
+
+<p>Consider a simple example app where in <code>PostActivity</code> we ask the user to provide a <code>title</code>,
+<code>content</code> of a post and post it. This information along with the current time is passed on
+to the <code>DisplayActivity</code> which displays the <code>title</code>, <code>content</code> and <code>time</code>. So to perform this
+simple task the activities will look something like this:</p>
+
+<p>First let&#39;s see the <code>DisplayActivity</code></p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">DisplayActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+    <span class="c1">// intent keys</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">KEY_TITLE</span>   <span class="o">=</span> <span class="s">&quot;activity_display_title&quot;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">KEY_CONTENT</span> <span class="o">=</span> <span class="s">&quot;activity_display_content&quot;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">KEY_TIME</span>    <span class="o">=</span> <span class="s">&quot;activity_display_time&quot;</span>
+
+    <span class="n">String</span> <span class="n">title</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">content</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">time</span><span class="o">;</span>
+
+    <span class="n">TextView</span> <span class="n">titleTv</span><span class="o">;</span>
+    <span class="n">TextView</span> <span class="n">contentTv</span><span class="o">;</span>
+    <span class="n">TextView</span> <span class="n">timeTv</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+        <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">activity_display</span><span class="o">);</span>
+
+        <span class="c1">// init the views (or use ButterKnife)</span>
+
+        <span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="n">getIntent</span><span class="o">();</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">intent</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">intent</span><span class="o">.</span><span class="na">getStringExtra</span><span class="o">(</span><span class="n">KEY_TITLE</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">intent</span><span class="o">.</span><span class="na">getStringExtra</span><span class="o">(</span><span class="n">KEY_CONTENT</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">intent</span><span class="o">.</span><span class="na">getStringExtra</span><span class="o">(</span><span class="n">KEY_TIME</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+
+            <span class="n">titleTv</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">title</span><span class="o">);</span>
+            <span class="n">contentTv</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">content</span><span class="o">);</span>
+            <span class="n">timeTv</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">time</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div>
+<p>Now the <code>PostActivity</code> looks like this</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">PostActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="kd">implements</span> <span class="n">View</span><span class="o">.</span><span class="na">OnClickListener</span> <span class="o">{</span>
+    <span class="n">EditText</span> <span class="n">title</span><span class="o">;</span>
+    <span class="n">EditText</span> <span class="n">content</span><span class="o">;</span>
+    <span class="n">Button</span> <span class="n">post</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+        <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">activity_post</span><span class="o">);</span>
+
+        <span class="c1">// init the views (or use ButterKnife)</span>
+
+        <span class="n">post</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+      <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Intent</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">DisplayActivity</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+                                <span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">DisplayActivity</span><span class="o">.</span><span class="na">KEY_TITLE</span><span class="o">,</span>
+                                          <span class="n">title</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">toString</span><span class="o">())</span>
+                                <span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">DisplayActivity</span><span class="o">.</span><span class="na">KEY_CONTENT</span><span class="o">,</span>
+                                          <span class="n">content</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">toString</span><span class="o">())</span>
+                                <span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">DisplayActivity</span><span class="o">.</span><span class="na">KEY_TIME</span><span class="o">,</span>
+                                          <span class="n">getTimeAsString</span><span class="o">());</span>
+        <span class="n">startActivity</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="n">String</span> <span class="nf">getTimeAsString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// obtain date time from calendar, format to string and return time</span>
+        <span class="k">return</span> <span class="n">timeStr</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>For achieving this small result we had to define <code>KEYS</code> for the intent, construct that intent
+in <code>PostActivity</code> and parse the intent in <code>DisplayActivity</code>. And after all this if in future
+we decide that <code>DisplayActivity</code> would accept <code>time</code> as <code>long</code> instead of <code>String</code> then if
+all the activities opening <code>DisplayActivity</code> would have to be altered and the compiler would
+not be of any help if there are multiple activities accessing <code>DisplayActivity</code>. Since
+<code>intent.putExtra(key, value)</code> accepts both <code>String</code> and <code>long</code> no compile time error would be
+ shown. Only a runtime exception (which is also caught and printed as a warning in the logs) is
+ thrown. How do we solve this then?</p>
+
+<h3>The solution</h3>
+
+<p>So a slightly better way and type safe way to do the above would be to define a static <code>start()</code>
+ method in <code>DisplayActivity</code> and use only the static method to start activity:</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">DisplayActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+    <span class="c1">// intent keys can now be private</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">KEY_TITLE</span>   <span class="o">=</span> <span class="s">&quot;activity_display_title&quot;</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">KEY_CONTENT</span> <span class="o">=</span> <span class="s">&quot;activity_display_content&quot;</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">KEY_TIME</span>    <span class="o">=</span> <span class="s">&quot;activity_display_time&quot;</span>
+
+    <span class="c1">// same as the previous version</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">(</span><span class="n">String</span> <span class="n">title</span><span class="o">,</span> <span class="n">String</span> <span class="n">content</span><span class="o">,</span> <span class="n">String</span> <span class="n">time</span><span class="o">,</span> <span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Intent</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">DisplayActivity</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+                                <span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">DisplayActivity</span><span class="o">.</span><span class="na">KEY_TITLE</span><span class="o">,</span>
+                                          <span class="n">title</span><span class="o">)</span>
+                                <span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">DisplayActivity</span><span class="o">.</span><span class="na">KEY_CONTENT</span><span class="o">,</span>
+                                          <span class="n">content</span><span class="o">)</span>
+                                <span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">DisplayActivity</span><span class="o">.</span><span class="na">KEY_TIME</span><span class="o">,</span>
+                                          <span class="n">time</span><span class="o">);</span>
+        <span class="n">context</span><span class="o">.</span><span class="na">startActivity</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span>
+    <span class="o">}</span>
+ <span class="o">}</span>
+</code></pre></div>
+<p>Now <code>PostActivity</code> can simply use this method without bothering with the intent keys</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">PostActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="n">implement</span> <span class="n">View</span><span class="o">.</span><span class="na">OnClickListener</span> <span class="o">{</span>
+
+    <span class="c1">// same code as above version</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">DisplayActivity</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="n">title</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">toString</span><span class="o">,</span>
+                              <span class="n">content</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">toString</span><span class="o">(),</span>
+                              <span class="n">getTimesAsString</span><span class="o">(),</span>
+                              <span class="k">this</span><span class="o">);</span>
+    <span class="o">}</span>
+ <span class="o">}</span>
+</code></pre></div>
+<p>By this calling code becomes much cleaner and also if in future <code>time</code> in <code>DisplayActivity</code> is changed
+ to <code>long</code> then it would show an error at all the places <code>String</code> is being used in the <code>start()</code> method
+ in compile time. This is a very good solution to the problem but increases the trivial code that needs
+ to be written.</p>
+
+<h3><a href="https://github.com/workarounds/bundler">Bundler</a> to reduce the broiler plate</h3>
+
+<p><a href="https://github.com/workarounds/bundler">Bundler</a> is an annotation processor that aims to generate
+this trivial code for you. Using bundler the <code>DisplayActivity</code> will change to:</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RequiresBundler</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DisplayActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+    <span class="nd">@Arg</span>
+    <span class="n">String</span> <span class="n">title</span><span class="o">;</span>
+    <span class="nd">@Arg</span>
+    <span class="n">String</span> <span class="n">content</span><span class="o">;</span>
+    <span class="nd">@Arg</span>
+    <span class="n">String</span> <span class="n">time</span><span class="o">;</span>
+
+    <span class="n">TextView</span> <span class="n">titleTv</span><span class="o">;</span>
+    <span class="n">TextView</span> <span class="n">contentTv</span><span class="o">;</span>
+    <span class="n">TextView</span> <span class="n">timeTv</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+        <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">activity_display</span><span class="o">);</span>
+
+        <span class="c1">// init the views (or use ButterKnife)</span>
+
+        <span class="n">Bundler</span><span class="o">.</span><span class="na">inject</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div>
+<p>And now <code>DisplayActivity</code> can be started from <code>PostActivity</code> as follows:</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PostActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="n">implement</span> <span class="n">View</span><span class="o">.</span><span class="na">OnClickListener</span> <span class="o">{</span>
+
+    <span class="c1">// same code as the initial version</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Bundler</span><span class="o">.</span><span class="na">diplayActivity</span><span class="o">(</span><span class="n">title</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">toString</span><span class="o">(),</span>
+                               <span class="n">content</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">toString</span><span class="o">(),</span>
+                               <span class="n">getTimeAsString</span><span class="o">())</span>
+                               <span class="o">.</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p><code>Bundler</code> is the generated class. It has static methods to start and inject activities (also fragments).
+There are also some helper classes generated which provide additional advanced functionality (more about
+this in a later post). It also has a <code>@State</code> annotation which can be used to save and restore instance
+state (like IcePick library).</p>
+
+<p>The objective of the library is to help make type safe ways to start and create activities, services and
+fragments a breeze (as easy as defining annotated fields). Reviews of the API, comments and suggestions on
+how to make it better, help with docs, testing and any sort of PRs in general are welcome. We&#39;re currently
+using this library in this app:
+<a href="https://play.google.com/apps/publish/?dev_acc=04786613567846403539#MarketListingPlace:p=in.workarounds.define">Define</a>
+and this library <a href="https://github.com/workarounds/portal">Portal</a>.</p>
+
+<p>Please create issues or comment on this reddit thread for suggestions:
+<a href="">reddit post</a></p>
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/blog/author/madki" style="background-image: url(/blog/assets/images/madhukiran.jpg)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/blog/author/madki">Madhu kiran</a></h4>
+                
+                
+                    <p> Believes coding is a form of creative expression.</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Some City, India</span> 
+                    <span class="author-link icon-link"><a href="http://madki.xyz"> madki.xyz</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Bundler&amp;url=http://madki.xyzbundler-intro"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://madki.xyzbundler-intro"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=http://madki.xyzbundler-intro"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story no-cover" href="/blog/alternate-appraoch-bundler">
+            <section class="post">
+                <h2>Alternate approach for Bundler</h2>
+                <p>## Problems with Bundler * global fields with package level visibility * use of generated...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/blog/">Stray thoughts & keystrokes</a> &copy; 2016</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/blog/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/blog/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+        <!-- Google Analytics Tracking code -->
+     <script>
+	    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	    ga('create', 'UA-73781008-1', 'auto');
+	    ga('send', 'pageview');
+
+     </script>   
+</body>
+</html>
